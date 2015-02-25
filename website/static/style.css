@@ -3,7 +3,7 @@ html, button, input, select, textarea, .pure-g [class *= "pure-u"], .pure-g-r [c
 }
 
 html{
-    background: #2d2d2d;
+    background: #000;
     overflow-y: scroll;
 }
 
@@ -25,10 +25,11 @@ header > .home-menu > a.pure-menu-heading, header > .home-menu > ul, header > .h
     align-items: center;
     justify-content: center;
     line-height: normal !important;
+    text-transform: uppercase;
 }
 
 header > .home-menu > a.pure-menu-heading{
-    color: white;
+    color: #e16f26;
     font-size: 1.5em;
 }
 
