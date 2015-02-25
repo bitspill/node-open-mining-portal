@@ -178,63 +178,51 @@
     #coinInfoClose:hover{
         color: #50f0e3;
     }
+
+
+    #main {
+      padding: 20px;
+    }
+
+    #main table td p {
+      margin: 0.5em 1em 0.5em 0;
+    }
+
+
 </style>
 
 <div id="holder">
 
-    <div id="menu">
+   <div id="main">
+        <h2>ziftrCOIN configuration</h2>
+        <hr />
+        <table>
+            <tr>
+              <td><p>Username:</p></td>
+              <td><p>your ziftrcoin wallet address</p></td>
+            </tr>
+            <tr>
+              <td><p>Password:</p></td>
+              <td><p>anything</p></td>
+            </tr>
+            <tr>
+              <td><p>Algorithm:</p></td>
+              <td><p>zr5</p></td>
+            </tr>
+            <tr>
+              <td><p>URL (difficulty 1):</p></td>
+              <td><p>stratum+tcp://ziftrpool.io:3008</p></td>
+            </tr>
+            <tr>
+              <td><p>URL (variable difficulty):</p></td>
+              <td><p>stratum+tcp://ziftrpool.io:3032</p></td>
+            </tr>
+            <tr>
+              <td><p>URL (difficulty 256):</p></td>
+              <td><p>stratum+tcp://ziftrpool.io:3256</p></td>
+            </tr>
+          </table>
 
-        {{? (function(){
-                if (!it.portalConfig.switching) return false;
-                for (var p in it.portalConfig.switching){
-                    if (it.portalConfig.switching[p].enabled)
-                        return true;
-                }
-                return false;
-            })()
-        }}
-        <div class="menuHeader">Coin-Switching Ports</div>
-        {{?}}
-
-        <div class="menuList">
-        {{ for (var p in it.portalConfig.switching){
-            if (!it.portalConfig.switching[p].enabled) continue;
-            var info = {
-                algo: p,
-                ports: {},
-                host: it.portalConfig.website.stratumHost
-            };
-            info.ports[it.portalConfig.switching[p].port] = {diff: it.portalConfig.switching[p].diff};
-            info = JSON.stringify(info).replace(/"/g, '&quot;');
-        }}
-            <a href="#" class="poolOption" data-info="{{=info}}">{{=p}}</a>
-        {{ } }}
-        </div>
-
-        <div class="menuHeader">Coins</div>
-        <div class="menuList" id="coinList">
-            {{ for(var pool in it.poolsConfigs) {
-                var info = JSON.stringify({
-                    coin: it.poolsConfigs[pool].coin,
-                    algo: it.poolsConfigs[pool].coin.algorithm,
-                    ports: it.poolsConfigs[pool].ports,
-                    host: it.portalConfig.website.stratumHost
-                }).replace(/"/g, '&quot;');
-            }}
-            <a href="#" class="poolOption" data-info="{{=info}}">{{=pool}}</a>
-            {{ } }}
-        </div>
-    </div>
-
-    <div id="main">
-
-        <a href="#" class="miningOption" id="coinGlowTrigger">
-            <div class="miningOptionNum">2.</div>
-            <div class="miningOptionInstructions">
-                <div>Select a coin for connection details</div>
-                <div>Configurations for each coin are available for advanced miners</div>
-            </div>
-        </a>
     </div>
 </div>
 
@@ -254,55 +242,3 @@
         </div>
     </div>
 </div>
-
-<script>
-
-    function showCoinConfig(info){
-
-        var htmlKeys = '<div class="coinInfoData">Algorithm:</div>';
-        var htmlValues = '<div class="coinInfoData">' + info.algo + '</div>';
-
-        for (var port in info.ports){
-            htmlKeys += '<div class="coinInfoData">URL <span class="coinInfoSubtle">(difficulty ' + info.ports[port].diff + ')</span>:</div>';
-            htmlValues += '<div class="coinInfoData">stratum+tcp://' + info.host + ':' + port + '</div>';
-        }
-
-        if (info.coin)
-            $('#coinInfoUsername').text('your ' + info.coin.name + ' wallet address');
-        else
-            $('#coinInfoUsername').text('your public key');
-        $('.coinInfoData').remove();
-        $('#coinInfoRowKeys').append(htmlKeys);
-        $('#coinInfoRowValues').append(htmlValues);
-    }
-
-    $('#coinGlowTrigger').click(function(event){
-        event.preventDefault();
-        $('.menuList').addClass('glow');
-        setTimeout(function(){
-            $('.menuList').removeClass('glow');
-        }, 200);
-        return false;
-    });
-
-    $('.poolOption').click(function(event){
-        event.preventDefault();
-        showCoinConfig($(this).data('info'));
-        $('#coinInfoBackground,#coinInfo').removeClass('hidden');
-        $('#coinInfoBackground').css('opacity', 0.7);
-        return false;
-    });
-
-    $('#coinInfoBackground,#coinInfoClose').click(function(event){
-        event.preventDefault();
-        $('#coinInfoBackground,#coinInfo').addClass('hidden');
-        $('#coinInfoBackground').css('opacity', 0.0);
-        return false;
-    });
-
-    $('#nompAppDownload').click(function(event){
-        event.preventDefault();
-        alert('NOMP App development still in progress...');
-        return false;
-    });
-</script>
