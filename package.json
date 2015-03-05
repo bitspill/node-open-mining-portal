@@ -10,7 +10,8 @@
         "poolserver",
         "bitcoin",
         "litecoin",
-        "scrypt"
+        "scrypt",
+        "ziftrCOIN"
     ],
     "homepage": "https://github.com/zone117x/node-open-mining-portal",
     "bugs": {
