@@ -131,7 +131,7 @@ void zr5_hash(const char* input, char* output, uint32_t len)
 	version = *versionPtr;
 
 	// copy the input buffer at input to a modifiable location at input512,
-	memcpy(input512, input, len);
+	memcpy((void *)input512, (void *)input, len);
 	// then clear the version (second two bytes of the first four) in the input buffer
 	// (standard convention before cryptocurrency hashing)
 	for (i=2; i<4 ; i++) {
@@ -143,17 +143,15 @@ void zr5_hash(const char* input, char* output, uint32_t len)
 
 	// Pull the data from the result for the Proof of Knowledge
 	// (this is the last four bytes of the result)
-	//nPoK = *(unsigned int *)output512[60];
 	ASSERT( (sizeof(output512) - 4) == 60);
-	memcpy(nPoK, output512 + (sizeof(output512) - 4), 4);
+	memcpy((void *)&nPoK, (void *)output512 + (sizeof(output512) - 4), 4);
 
 	// update the version field in the input buffer
 	// according to the Proof of Knowledge setting
 	version &= (~POK_BOOL_MASK);
 	version |= (POK_DATA_MASK & nPoK);
 	// and now write it back out to the input buffer
-	//(int)input = version;
-	memcpy(input512, &version, 4);
+	memcpy((void *)input512, (void *)&version, 4);
 
 	// apply a second hash of the same type, 512 bits in and out
 	zr5_512_hash(input512, output512, 64);
@@ -161,7 +159,7 @@ void zr5_hash(const char* input, char* output, uint32_t len)
     // copy the right-most 256 bits (32 bytes) of the last hash into the output buffer
     // TBD: replace the loop with a memcpy()
     ASSERT( sizeof(output512)/2 == 32);
-    memcpy(output, output512 + sizeof(output512)/2, sizeof(output512)/2);
+    memcpy((void *)output, (void *)output512 + sizeof(output512)/2, sizeof(output512)/2);
 
     return;
 }
@@ -178,12 +176,17 @@ uint32_t getleastsig32( uint32_t* buffer, unsigned int nIndex)
 	return(result);
 }
 
+#endif
+
 
 #ifdef TEST_ZR5
+// This code is C++ code, whether it looks like it or not
+// g++ -DTEST_ZR5=1 *.c sha3/*.c -o testzr5
 int main(int argc, char* argv[])
 {
 	int			passed = 0;
 	int			failed = 0;
+	char		zr5_out_512[64];
 	char		test0[] = {	0x01000000, 0x4e42b759, 0xbd656859, 0x9cff714b, 0x679dbf94,
 							0x6543c9ba, 0x8444f7b8, 0xb964bf21, 0x71070000, 0xc6bb8526,
 							0xc7e59d3b, 0xc92afd77, 0xb11e544a, 0xf69ae0d4, 0xda4f98bc,
@@ -222,11 +225,11 @@ int main(int argc, char* argv[])
 							0x371184d1, 0xf575f9d1, 0x44b7a164 };
 	char	xr5_out[64];
 
-	zr5_hash_512(test1, zr5_out, sizeof(test1) );
+	zr5_hash_512(test1, zr5_out_512, sizeof(test1) );
 	if (strncmp(zr5_out_512, xpec1, 64) == 0) {
 		passed += 1;
-		zr5_hash(test1, zr5_out, sizeof(test1) );
-		if (strncmp(zr5_out, xpec1, 32) == 0) {
+		zr5_hash(test1, zr5_out_512, sizeof(test1) );
+		if (strncmp(zr5_out_512, xpec1, 32) == 0) {
 			passed += 1;
 		}
 		else {
@@ -236,9 +239,9 @@ int main(int argc, char* argv[])
 	else {
 		failed += 2;
 	}
-	zr5_hash(test2, zr5_out, sizeof(test2) );
-	zr5_hash(test3, zr5_out, sizeof(test3) );
+	zr5_hash(test2, zr5_out_512, sizeof(test2) );
+	zr5_hash(test3, zr5_out_512, sizeof(test3) );
 
 	return 0;
 }
-#endif
+
