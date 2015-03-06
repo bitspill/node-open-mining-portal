@@ -14,17 +14,9 @@ static const unsigned int VERSION_MASK  = 0x00007FFF;
 static const unsigned int POK_BOOL_MASK = 0x00008000;
 static const unsigned int POK_DATA_MASK = 0xFFFF0000;
 
-
-void zr5_hash(const char* input, char* output, uint32_t len);
-void zr5_512_hash(const char* input, char* output, uint32_t len);
-uint32_t getleastsig32( uint32_t* buffer, unsigned int nIndex);
-
-//uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL_VERSION)
-//{
-//    CHashWriter ss(nType, nVersion);
-//    ss << obj;
-//    return ss.GetHash();
-//}
+void zr5_hash( const char* input, char* output, uint32_t len );
+void zr5_hash_512( const char* input, char* output, uint32_t len );
+uint32_t getleastsig32( uint32_t* buffer, unsigned int nIndex );
 
 #ifdef __cplusplus
 }
