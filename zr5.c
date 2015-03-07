@@ -87,12 +87,9 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
     // and put its output into the first hash output buffer
     sph_keccak512_close(&ctx_keccak, &(hash[0]));
     // Output from the keccak is the input to the next hash algorithm.
-	printf("%12s", "GotK: \n");
-    for(i=0; i<1; i++) {
-		printf("hash[%d]: ", i);
-		for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }
-		printf("\n");
-	}
+	printf("keccak[%d]: \n", i);
+	for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }
+	printf("\n");
 
     // Calculate the order of the remaining hashes
     // by taking least significant 32 bits of the first hash,
@@ -101,7 +98,7 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
 	//nOrder = getinnerint(&hash[0], 0, sizeof(hash[0]) ) % ARRAYLEN(arrOrder);
 	uint32_t gls32 = getleastsig32((uint8_t *)&hash[0], 0);
 	nOrder = gls32 % ARRAYLEN(arrOrder);
-	printf("Getleastsig32 = %u\n", gls32 );
+	printf("\nGetleastsig32 = %u\n", gls32 );
 	printf("%12s", "in hex: 0x");
 	for(j=0; j< sizeof(uint32_t); j++) { printf("%02x", *( (uint8_t *)(&gls32) + j) ); }
 	printf("\n");
@@ -120,29 +117,31 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
         // result of the keccak hash
         switch (arrOrder[nOrder][i]) {
         case BLAKE:
-			printf("blake_in[%d]: ", i);
-			for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }					printf("\n");            sph_blake512 (&ctx_blake, pStart, nSize);
+            sph_blake512(&ctx_blake, pStart, nSize);
             sph_blake512_close(&ctx_blake, pPutResult);
-			printf("blake_out[%d]: ", i+1);
+			printf("blake[%d]:\n", i+1);
 			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
 			printf("\n");
             break;
         case GROESTL:
-            sph_groestl512 (&ctx_groestl, pStart, nSize);
+            sph_groestl512(&ctx_groestl, pStart, nSize);
             sph_groestl512_close(&ctx_groestl, pPutResult);
-			for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }
+			printf("groestl[%d]:\n", i+1);
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
 			printf("\n");
             break;
         case JH:
-            sph_jh512 (&ctx_jh, pStart, nSize);
+            sph_jh512(&ctx_jh, pStart, nSize);
             sph_jh512_close(&ctx_jh, pPutResult);
-			for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }
+			printf("jh_out[%d]:\n", i+1);
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
 			printf("\n");
             break;
         case SKEIN:
-            sph_skein512 (&ctx_skein, pStart, nSize);
+            sph_skein512(&ctx_skein, pStart, nSize);
             sph_skein512_close(&ctx_skein, pPutResult);
-			for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }
+			printf("skein[%d]:\n", i+1);
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
 			printf("\n");
             break;
         default:
@@ -189,13 +188,20 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 	//if( (sizeof(output512) - 4) == 60)
 	//	printf("output512 has the expected size\n");
 	memcpy((uint8_t *)&nPoK, (uint8_t *)output512 + (sizeof(output512) - 4), 4);
+	printf("Pok: %u\n", nPoK);
 
 	// update the version field in the input buffer
 	// according to the Proof of Knowledge setting
+	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
+	printf("\n");
+	printf("version field: %u\n", version);
 	version &= (~POK_BOOL_MASK);
 	version |= (POK_DATA_MASK & nPoK);
+	printf("new version field: %u\n", version);
 	// and now write it back out to the input buffer
 	memcpy((uint8_t *)input512, (uint8_t *)&version, 4);
+	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
+	printf("\n");
 
 	// apply a second hash of the same type, 512 bits in and out,
 	// to the input modified with PoK
