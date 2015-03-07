@@ -1,5 +1,5 @@
 #!/bin/bash
-g++ zr5test.cpp ./build/Release/obj.target/multihashing/zr5.o \
+g++ -g zr5test.cpp zr5.c \
 ./build/Release/obj.target/multihashing/sha3/sph_blake.o \
 ./build/Release/obj.target/multihashing/sha3/sph_groestl.o \
 ./build/Release/obj.target/multihashing/sha3/sph_jh.o \
