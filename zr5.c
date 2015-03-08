@@ -78,9 +78,11 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
     uint8_t *				pPutResult;
     size_t					nSize     = len;	// length of input buffer in bytes
 
+	#ifdef TEST_VERBOSELY
 	printf("%12s", "zr5-512in: ");
 	for(j=0; j< len; j++) { printf("%02x", *(input + j) ); }
 	printf("\n");
+	#endif // TEST_VERBOSELY
 
     // initialize the buffers for hash results
     for(i=0; i<5; i++) { for(j=0; j<64; j++) { hash[i][j] = 0; } }
@@ -97,9 +99,11 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
     // and put its output into the first hash output buffer
     sph_keccak512_close(&ctx_keccak, &(hash[0]));
     // Output from the keccak is the input to the next hash algorithm.
+	#ifdef TEST_VERBOSELY
 	printf("keccak[%d]: \n", 0);
 	for(j=0; j< sizeof(hash[0]); j++) { printf("%02x", hash[0][j]); }
 	printf("\n");
+	#endif // TEST_VERBOSELY
 
     // Calculate the order of the remaining hashes
     // by taking least significant 32 bits of the first hash,
@@ -108,11 +112,13 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
 	//nOrder = getinnerint(&hash[0], 0, sizeof(hash[0]) ) % ARRAYLEN(arrOrder);
 	uint32_t gls32 = getleastsig32((uint8_t *)&hash[0], 0);
 	nOrder = gls32 % ARRAYLEN(arrOrder);
+	#ifdef TEST_VERBOSELY
 	printf("\nGetleastsig32 = %u\n", gls32 );
 	printf("%12s", "in hex: 0x");
 	for(j=0; j< sizeof(uint32_t); j++) { printf("%02x", *( (uint8_t *)(&gls32) + j) ); }
 	printf("\n");
 	printf("nOrder = %d\n", nOrder);
+	#endif // TEST_VERBOSELY
 	// The output of each of the five hashes is 512bits = 64 bytes.
 	// Therefore, the input to the last four hashes is also 64 bytes.
 	nSize      = 64;
@@ -133,30 +139,38 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
         case BLAKE:
             sph_blake512(&ctx_blake, pStart, nSize);
             sph_blake512_close(&ctx_blake, pPutResult);
+			#ifdef TEST_VERBOSELY
 			printf("blake[%d]:\n", i+1);
 			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
+			#endif // TEST_VERBOSELY
             break;
         case GROESTL:
             sph_groestl512(&ctx_groestl, pStart, nSize);
             sph_groestl512_close(&ctx_groestl, pPutResult);
+			#ifdef TEST_VERBOSELY
 			printf("groestl[%d]:\n", i+1);
 			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
+			#endif // TEST_VERBOSELY
             break;
         case JH:
             sph_jh512(&ctx_jh, pStart, nSize);
             sph_jh512_close(&ctx_jh, pPutResult);
+			#ifdef TEST_VERBOSELY
 			printf("jh_out[%d]:\n", i+1);
 			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
+			#endif // TEST_VERBOSELY
             break;
         case SKEIN:
             sph_skein512(&ctx_skein, pStart, nSize);
             sph_skein512_close(&ctx_skein, pPutResult);
+			#ifdef TEST_VERBOSELY
 			printf("skein[%d]:\n", i+1);
 			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
+			#endif // TEST_VERBOSELY TEST_VERBOSELY
             break;
         default:
             break;
@@ -175,17 +189,12 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 	uint32_t		nPoK = 0;									// integer copy of PoK state
 	static const unsigned int POK_BOOL_MASK = 0x00008000;
 	static const unsigned int POK_DATA_MASK = 0xFFFF0000;
+	#ifdef TEST_VERBOSELY
 	unsigned int	i;										// generic loop counter
+	#endif // TEST_VERBOSELY
 
-	// reference to make sure we copied all of the right thing.
-	//printf("%12s", "original input:\n");
-	//for(i=0; i< len; i++) { printf("%02x", input[i]); }
-	//printf("\n");
 	// copy the input buffer at input to a modifiable location at input512,
 	memcpy((uint8_t *)input512, (uint8_t *)input, len);
-	//printf("%12s", "our copy of the input:\n");
-	//for(i=0; i< len; i++) { printf("%02x", input512[i]); }
-	//printf("\n");
 	// store the version bytes
 	memcpy((uint8_t *)&version, (uint8_t *)input, 4);
 
@@ -201,29 +210,36 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 	#if BYTE_ORDER == LITTLE_ENDIAN
 		nPoK &= 0xFFFF0000;		// bytes 3&4 of big endian are 1&2 of little endian
 	#else
-		nPoK &= 0x0000FFFF;		// bytes 3&4 of big endian are 1&2 of little endian
+		nPoK &= 0x0000FFFF;		// bytes 1&2 of big endian are 3&4 of little endian
 	#endif
-//	nPoK = Reverse32(nPoK);		// reversal for little endian only
+	#ifdef TEST_VERBOSELY
 	printf("\n\nPok Value: %u\n", nPoK);
+	#endif // TEST_VERBOSELY
 	//
 	// PoK part 2:
 	// update the version variable with the masks and PoK value
 	// according to the Proof of Knowledge setting
+	#ifdef TEST_VERBOSELY
 	printf("version field: %u\n", version);
+	#endif // TEST_VERBOSELY
 	version &= (~POK_BOOL_MASK);
 	version |= (POK_DATA_MASK & nPoK);
 	printf("new version field: %u\n", version);
 	// TBD: fix the bug that stomps on input512
 	// make a copy of our input again to get past input512 getting stomped
 	memcpy((uint8_t *)input512, (uint8_t *)input, len);
+	#ifdef TEST_VERBOSELY
 	printf("input before PoK modification:\n");
 	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
 	printf("\n");
+	#endif // TEST_VERBOSELY
 	// and now write it back out to our copy of the input buffer
 	memcpy((uint8_t *)input512, (uint8_t *)&version, 4);
+	#ifdef TEST_VERBOSELY
 	printf("Input modified with PoK: %u\n", version);
 	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
 	printf("\n");
+	#endif // TEST_VERBOSELY
 
 	// apply a second ZR5 hash of the modified input, 512 bits in and out,
 	// to the input modified with PoK. Length is still the original length
@@ -231,9 +247,11 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 
     // copy the left-most 256 bits (32 bytes) of the last hash into the output buffer
     memcpy((uint8_t *)output, (uint8_t *)output512, sizeof(output512)/2);
+	#ifdef TEST_VERBOSELY
 	printf("zr5 final:\n");
 	for(i=0; i< 32; i++) { printf("%02x", output[i]); }
 	printf("\n");
+	#endif // TEST_VERBOSELY
 
     return;
 }
@@ -244,11 +262,15 @@ uint32_t getleastsig32( uint8_t* buffer, unsigned int nIndex)
 {
 	uint32_t *	ptr = NULL;
 	uint32_t	result;
+	#ifdef TEST_VERBOSELY
 	unsigned	uint32_offset;
+	#endif //TEST_VERBOSELY
 
 	ptr = (uint32_t *)buffer;
+	#ifdef TEST_VERBOSELY
 	uint32_offset = nIndex % sizeof(uint32_t);
 	printf("uint32_offset = %d\n", uint32_offset);
+	#endif // TEST_VERBOSELY
 	result = ptr[nIndex % sizeof(uint32_t)];
 
 	return(result);
