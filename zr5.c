@@ -18,6 +18,16 @@ extern "C" {
 
 enum {KECCAK = -1, BLAKE, GROESTL, JH, SKEIN} ziftrAlgoIDs;
 
+static inline uint32_t Reverse32(uint32_t n)
+{
+	#if BYTE_ORDER == LITTLE_ENDIAN
+		return n << 24 | (n & 0x0000ff00) << 8 | (n & 0x00ff0000) >> 8 | n >> 24;
+	#else
+		return n;
+	#endif
+}
+
+
 void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
 {
     //static const uint256 INT_MASK("0xFFFFFFFF");
@@ -87,8 +97,8 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
     // and put its output into the first hash output buffer
     sph_keccak512_close(&ctx_keccak, &(hash[0]));
     // Output from the keccak is the input to the next hash algorithm.
-	printf("keccak[%d]: \n", i);
-	for(j=0; j< sizeof(hash[i]); j++) { printf("%02x", hash[i][j]); }
+	printf("keccak[%d]: \n", 0);
+	for(j=0; j< sizeof(hash[0]); j++) { printf("%02x", hash[0][j]); }
 	printf("\n");
 
     // Calculate the order of the remaining hashes
@@ -112,6 +122,10 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
     for (i = 0; i < 4; i++) {
         pStart     = (uint8_t *)(&hash[i]);
         pPutResult = (uint8_t *)(&hash[i+1]);
+        // have the result of the last hash go straight into the output buffer
+        // in order to use one less buffer and avoid having to copy the last result
+        if (i == 3)
+        	pPutResult = output;
 
         // apply blake, groestl, jh, and skein in an order determined by the
         // result of the keccak hash
@@ -157,8 +171,8 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 {
 	uint8_t			input512[64];							// writeable copy of input
 	uint8_t			output512[64];							// output of both zr5 hashes
-	unsigned int	version;								// writeable copy of version
-	unsigned int	nPoK;									// integer copy of PoK state
+	uint32_t		version;								// writeable copy of version
+	uint32_t		nPoK = 0;									// integer copy of PoK state
 	static const unsigned int POK_BOOL_MASK = 0x00008000;
 	static const unsigned int POK_DATA_MASK = 0xFFFF0000;
 	unsigned int	i;										// generic loop counter
@@ -183,23 +197,32 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 	// apply the first hash, yielding 512bits = 64 bytes
 	zr5_hash_512(input512, output512, len);
 
+	// Now begins Proof of Knowledge
+	//
 	// Pull the data from the result for the Proof of Knowledge
-	// (this is the last four bytes of the result)
-	//if( (sizeof(output512) - 4) == 60)
-	//	printf("output512 has the expected size\n");
-	memcpy((uint8_t *)&nPoK, (uint8_t *)output512 + (sizeof(output512) - 4), 4);
-	printf("Pok: %u\n", nPoK);
+	// (this is the 3rd and 4th of the first four bytes of the result)
+	memcpy(&nPoK, (uint8_t *)output512, 4);	// yields big or little endian uint
+	// keep only the two least significant bytes
+	#if BYTE_ORDER == LITTLE_ENDIAN
+		nPoK &= 0xFFFF0000;		// bytes 3&4 of big endian are 1&2 of little endian
+	#else
+		nPoK &= 0x0000FFFF;		// bytes 3&4 of big endian are 1&2 of little endian
+	#endif
+//	nPoK = Reverse32(nPoK);		// reversal for little endian only
+	printf("\n\nPok Value: %u\n", nPoK);
 
-	// update the version field in the input buffer
+	// update the version variable with the masks and PoK value
 	// according to the Proof of Knowledge setting
-	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
-	printf("\n");
 	printf("version field: %u\n", version);
 	version &= (~POK_BOOL_MASK);
 	version |= (POK_DATA_MASK & nPoK);
 	printf("new version field: %u\n", version);
+	printf("input before PoK modification:\n");
+	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
+	printf("\n");
 	// and now write it back out to the input buffer
 	memcpy((uint8_t *)input512, (uint8_t *)&version, 4);
+	printf("Input modified with PoK: %u\n", version);
 	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
 	printf("\n");
 
@@ -231,7 +254,6 @@ uint32_t getleastsig32( uint8_t* buffer, unsigned int nIndex)
 
 	return(result);
 }
-
 
 #ifdef __cplusplus
 }
