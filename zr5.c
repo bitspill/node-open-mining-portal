@@ -134,28 +134,28 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
             sph_blake512(&ctx_blake, pStart, nSize);
             sph_blake512_close(&ctx_blake, pPutResult);
 			printf("blake[%d]:\n", i+1);
-			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
             break;
         case GROESTL:
             sph_groestl512(&ctx_groestl, pStart, nSize);
             sph_groestl512_close(&ctx_groestl, pPutResult);
 			printf("groestl[%d]:\n", i+1);
-			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
             break;
         case JH:
             sph_jh512(&ctx_jh, pStart, nSize);
             sph_jh512_close(&ctx_jh, pPutResult);
 			printf("jh_out[%d]:\n", i+1);
-			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
             break;
         case SKEIN:
             sph_skein512(&ctx_skein, pStart, nSize);
             sph_skein512_close(&ctx_skein, pPutResult);
 			printf("skein[%d]:\n", i+1);
-			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", hash[i+1][j]); }
+			for(j=0; j< sizeof(hash[i+1]); j++) { printf("%02x", pPutResult[j]); }
 			printf("\n");
             break;
         default:
@@ -177,22 +177,17 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 	static const unsigned int POK_DATA_MASK = 0xFFFF0000;
 	unsigned int	i;										// generic loop counter
 
-	// store the version bytes
-	memcpy((uint8_t *)&version, (uint8_t *)input, 4);
-
-	printf("%12s", "input: ");
-	for(i=0; i< len; i++) { printf("%02x", input[i]); }
-	printf("\n");
+	// reference to make sure we copied all of the right thing.
+	//printf("%12s", "original input:\n");
+	//for(i=0; i< len; i++) { printf("%02x", input[i]); }
+	//printf("\n");
 	// copy the input buffer at input to a modifiable location at input512,
 	memcpy((uint8_t *)input512, (uint8_t *)input, len);
-	// then clear the version (second two bytes of the first four) in the input buffer
-	// (standard convention before cryptocurrency hashing)
-//	for (i=2; i<4 ; i++) {
-//		input512[i] = 0;
-//	}
-//	printf("%12s", "inZeroed: ");
-	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
-	printf("\n");
+	//printf("%12s", "our copy of the input:\n");
+	//for(i=0; i< len; i++) { printf("%02x", input512[i]); }
+	//printf("\n");
+	// store the version bytes
+	memcpy((uint8_t *)&version, (uint8_t *)input, 4);
 
 	// apply the first hash, yielding 512bits = 64 bytes
 	zr5_hash_512(input512, output512, len);
@@ -210,31 +205,35 @@ void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
 	#endif
 //	nPoK = Reverse32(nPoK);		// reversal for little endian only
 	printf("\n\nPok Value: %u\n", nPoK);
-
+	//
+	// PoK part 2:
 	// update the version variable with the masks and PoK value
 	// according to the Proof of Knowledge setting
 	printf("version field: %u\n", version);
 	version &= (~POK_BOOL_MASK);
 	version |= (POK_DATA_MASK & nPoK);
 	printf("new version field: %u\n", version);
+	// TBD: fix the bug that stomps on input512
+	// make a copy of our input again to get past input512 getting stomped
+	memcpy((uint8_t *)input512, (uint8_t *)input, len);
 	printf("input before PoK modification:\n");
 	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
 	printf("\n");
-	// and now write it back out to the input buffer
+	// and now write it back out to our copy of the input buffer
 	memcpy((uint8_t *)input512, (uint8_t *)&version, 4);
 	printf("Input modified with PoK: %u\n", version);
 	for(i=0; i< len; i++) { printf("%02x", input512[i]); }
 	printf("\n");
 
-	// apply a second hash of the same type, 512 bits in and out,
-	// to the input modified with PoK
+	// apply a second ZR5 hash of the modified input, 512 bits in and out,
+	// to the input modified with PoK. Length is still the original length
 	zr5_hash_512(input512, output512, len);
 
-    // copy the right-most 256 bits (32 bytes) of the last hash into the output buffer
-    // TBD: replace the loop with a memcpy()
-    //if( sizeof(output512)/2 == 32)
-    //	printf("rightmost half of 512 bits are where we expect them.\n");
-    memcpy((uint8_t *)output, (uint8_t *)output512 + sizeof(output512)/2, sizeof(output512)/2);
+    // copy the left-most 256 bits (32 bytes) of the last hash into the output buffer
+    memcpy((uint8_t *)output, (uint8_t *)output512, sizeof(output512)/2);
+	printf("zr5 final:\n");
+	for(i=0; i< 32; i++) { printf("%02x", output[i]); }
+	printf("\n");
 
     return;
 }
