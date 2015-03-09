@@ -144,7 +144,7 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
 }
 
 
-void zr5_hash( uint8_t* input, uint8_t* output, uint32_t len)
+void zr5_hash( void* input, void* output, uint32_t len)
 {
 	uint8_t			input512[64];							// writeable copy of input
 	uint8_t			output512[64];							// output of both zr5 hashes
