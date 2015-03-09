@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-//#include "uint256.h"
 
 #define ARRAYLEN(array)     (sizeof(array)/sizeof((array)[0]))
 #define WIDTH	(BITS/32)
