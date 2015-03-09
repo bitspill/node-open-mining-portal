@@ -188,7 +188,7 @@ var algos = module.exports = global.algos = {
                 return multiHashing.zr5.apply(this, arguments);
             }
         }
-    }
+    },
     ziftr: {
         hash: function(){
             return function(){
