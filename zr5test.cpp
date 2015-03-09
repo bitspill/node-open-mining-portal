@@ -10,7 +10,7 @@
 #include "sha3/sph_keccak.h"
 #include "sha3/sph_skein.h"
 
-enum {KECCAK = 0, BLAKE, GROESTL, JH, SKEIN} algoIDs;  // need this one zero based
+enum {KECCAK_ID = 0, BLAKE_ID, GROESTL_ID, JH_ID, SKEIN_ID};  // need this one zero based
 
 // function prototypes
 short test_zr5_hash_512(unsigned * passedTestsPtr, unsigned * failedTestsPtr);
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 	test_zr5_hash_512(&total_passed, &total_failed);
 	test_zr5(&total_passed, &total_failed);
 
-	printf("%u tests total.\n", total_passed + total_failed);
+	printf("%u ZR5 tests total.\n", total_passed + total_failed);
 	printf("%u tests passed.\n", total_passed);
 	printf("%u tests failed.\n", total_failed);
 
@@ -124,18 +124,18 @@ short test_single_hashes(unsigned * passedTestsPtr, unsigned * failedTestsPtr)
 	// Replicate the order of hashes that occurs in ZR5 for a test4 input
 	//
 	// test_single_hash(input, len, expected, algoIndex, passedTestsPtr, failedTestsPtr)
-	test_single_hash(kin1, 80, keccak_out1, KECCAK, &passed, &failed);
-	test_single_hash(keccak_out1, 64, skein_out1, SKEIN, &passed, &failed);
-	test_single_hash(skein_out1, 64, blake_out1, BLAKE, &passed, &failed);
-	test_single_hash(blake_out1, 64, jh_out1, JH, &passed, &failed);
-	test_single_hash(jh_out1, 64, groestl_out1, GROESTL, &passed, &failed);
+	test_single_hash(kin1, 80, keccak_out1, KECCAK_ID, &passed, &failed);
+	test_single_hash(keccak_out1, 64, skein_out1, SKEIN_ID, &passed, &failed);
+	test_single_hash(skein_out1, 64, blake_out1, BLAKE_ID, &passed, &failed);
+	test_single_hash(blake_out1, 64, jh_out1, JH_ID, &passed, &failed);
+	test_single_hash(jh_out1, 64, groestl_out1, GROESTL_ID, &passed, &failed);
 	//
 	// start the second round of hashes with the input from kin1 modified with PoK
-	test_single_hash(kin2, 80, keccak_out2, KECCAK, &passed, &failed);
-	test_single_hash(keccak_out2, 64, groestl_out2, GROESTL, &passed, &failed);
-	test_single_hash(groestl_out2, 64, jh_out2, JH, &passed, &failed);
-	test_single_hash(jh_out2, 64, blake_out2, BLAKE, &passed, &failed);
-	test_single_hash(blake_out2, 64, skein_out2, SKEIN, &passed, &failed);
+	test_single_hash(kin2, 80, keccak_out2, KECCAK_ID, &passed, &failed);
+	test_single_hash(keccak_out2, 64, groestl_out2, GROESTL_ID, &passed, &failed);
+	test_single_hash(groestl_out2, 64, jh_out2, JH_ID, &passed, &failed);
+	test_single_hash(jh_out2, 64, blake_out2, BLAKE_ID, &passed, &failed);
+	test_single_hash(blake_out2, 64, skein_out2, SKEIN_ID, &passed, &failed);
 
 	*passedTestsPtr += passed;
 	*failedTestsPtr += failed;
@@ -154,31 +154,31 @@ short test_single_hash(uint8_t* input, unsigned len, uint8_t* expected, uint8_t 
 	unsigned	failed = 0;
 
 	switch(algoIndex)	{
-		case KECCAK:
+		case KECCAK_ID:
 			sph_keccak512_context	ctx_keccak;		// context for a Keccak hash
 			sph_keccak512_init(&ctx_keccak);
 			sph_keccak512 (&ctx_keccak, input, len);
 			sph_keccak512_close(&ctx_keccak, output512);
 			break;
-        case BLAKE:
+        case BLAKE_ID:
 			sph_blake512_context	ctx_blake;		// context for a Blake hash
 			sph_blake512_init(&ctx_blake);
             sph_blake512(&ctx_blake, input, len);
             sph_blake512_close(&ctx_blake, output512);
             break;
-        case GROESTL:
+        case GROESTL_ID:
 			sph_groestl512_context	ctx_groestl;	// context for a Groestl hash
 			sph_groestl512_init(&ctx_groestl);
             sph_groestl512(&ctx_groestl, input, len);
             sph_groestl512_close(&ctx_groestl, output512);
             break;
-        case JH:
+        case JH_ID:
 			sph_jh512_context		ctx_jh;			// context for a JH hash
 			sph_jh512_init(&ctx_jh);
             sph_jh512(&ctx_jh, input, len);
             sph_jh512_close(&ctx_jh, output512);
             break;
-        case SKEIN:
+        case SKEIN_ID:
 			sph_skein512_context	ctx_skein;		// context for a Skein hash
 			sph_skein512_init(&ctx_skein);
             sph_skein512(&ctx_skein, input, len);
