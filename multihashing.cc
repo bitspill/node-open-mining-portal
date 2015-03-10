@@ -6,6 +6,7 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <stdint.h>
+#include <stdio.h>
 
 extern "C" {
     #include "bcrypt.h"
@@ -582,6 +583,7 @@ Handle<Value> fresh(const Arguments& args) {
 Handle<Value> zr5(const Arguments& args) {
     HandleScope scope;
 
+	printf("ZR5 MARKER TRASH:\n");
     if (args.Length() < 1)
         return except("You must provide one argument.");
 
@@ -595,13 +597,14 @@ Handle<Value> zr5(const Arguments& args) {
 
     unsigned int dSize = Buffer::Length(target);
 
-    zr5_hash(input, output, dSize);
+    zr5_hash((uint8_t *)input, (uint8_t *)output, dSize);
 
     Buffer* buff = Buffer::New(output, 32);
     return scope.Close(buff->handle_);
 }
 
 void init(Handle<Object> exports) {
+	printf("MARKER TRASH:\n");
     exports->Set(String::NewSymbol("quark"), FunctionTemplate::New(quark)->GetFunction());
     exports->Set(String::NewSymbol("x11"), FunctionTemplate::New(x11)->GetFunction());
     exports->Set(String::NewSymbol("scrypt"), FunctionTemplate::New(scrypt)->GetFunction());
@@ -624,7 +627,8 @@ void init(Handle<Object> exports) {
     exports->Set(String::NewSymbol("sha1"), FunctionTemplate::New(sha1)->GetFunction());
     exports->Set(String::NewSymbol("x15"), FunctionTemplate::New(x15)->GetFunction());
     exports->Set(String::NewSymbol("fresh"), FunctionTemplate::New(fresh)->GetFunction());
-    exports->Set(String::NewSymbol("zr5"), FunctionTemplate::New(fresh)->GetFunction());
+    exports->Set(String::NewSymbol("zr5"), FunctionTemplate::New(zr5)->GetFunction());
+    exports->Set(String::NewSymbol("ziftr"), FunctionTemplate::New(zr5)->GetFunction());
 }
 
 NODE_MODULE(multihashing, init)
