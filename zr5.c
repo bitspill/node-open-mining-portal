@@ -146,10 +146,10 @@ void zr5_hash_512( uint8_t* input, uint8_t* output, uint32_t len )
 
 void zr5_hash( void* input, void* output, uint32_t len)
 {
-	uint8_t			input512[64];							// writeable copy of input
+	uint8_t	*		input512;								// writeable copy of input
 	uint8_t			output512[64];							// output of both zr5 hashes
 	uint32_t		version;								// writeable copy of version
-	uint32_t		nPoK = 0;									// integer copy of PoK state
+	uint32_t		nPoK = 0;								// integer copy of PoK state
 	static const unsigned int POK_BOOL_MASK = 0x00008000;
 	static const unsigned int POK_DATA_MASK = 0xFFFF0000;
 //	#ifdef TEST_VERBOSELY
@@ -157,9 +157,10 @@ void zr5_hash( void* input, void* output, uint32_t len)
 //	#endif // TEST_VERBOSELY
 
 	// copy the input buffer at input to a modifiable location at input512,
+	input512 = (uint8_t	*)malloc(len);		// allocate space for the copy
 	memcpy((uint8_t *)input512, (uint8_t *)input, len);
 //	#ifdef TEST_VERBOSELY
-	printf("%12s", "zr5_hash input:\n");
+	printf("zr5_hash input:\n");
 	for (i=0; i<len; i++) { printf("%02x", input512[i]); }
 	printf("\n\n");
 //	#endif // TEST_VERBOSELY
@@ -188,9 +189,7 @@ void zr5_hash( void* input, void* output, uint32_t len)
 	version &= (~POK_BOOL_MASK);
 	version |= (POK_DATA_MASK & nPoK);
 	printf("new version field: %u\n", version);
-	// TBD: fix the bug that stomps on input512
-	// for now, copy our input again to get past input512 getting stomped
-	memcpy((uint8_t *)input512, (uint8_t *)input, len);
+
 	// and now write it back out to our copy of the input buffer
 	memcpy((uint8_t *)input512, (uint8_t *)&version, 4);
 
@@ -201,6 +200,7 @@ void zr5_hash( void* input, void* output, uint32_t len)
     // copy the left-most 256 bits (32 bytes) of the last hash into the output buffer
     memcpy((uint8_t *)output, (uint8_t *)output512, sizeof(output512)/2);
 
+    free(input512);
     return;
 }
 
