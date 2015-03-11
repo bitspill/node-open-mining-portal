@@ -583,7 +583,7 @@ Handle<Value> fresh(const Arguments& args) {
 Handle<Value> zr5(const Arguments& args) {
     HandleScope scope;
 
-	printf("ZR5 MARKER TRASH:\n");
+	//printf("ZR5 DEBUG MARKER:\n");
     if (args.Length() < 1)
         return except("You must provide one argument.");
 
@@ -604,7 +604,7 @@ Handle<Value> zr5(const Arguments& args) {
 }
 
 void init(Handle<Object> exports) {
-	printf("MARKER TRASH:\n");
+	//printf("ZR5 DEBUG INIT:\n");
     exports->Set(String::NewSymbol("quark"), FunctionTemplate::New(quark)->GetFunction());
     exports->Set(String::NewSymbol("x11"), FunctionTemplate::New(x11)->GetFunction());
     exports->Set(String::NewSymbol("scrypt"), FunctionTemplate::New(scrypt)->GetFunction());

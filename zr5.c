@@ -152,18 +152,18 @@ void zr5_hash( void* input, void* output, uint32_t len)
 	uint32_t		nPoK = 0;								// integer copy of PoK state
 	static const unsigned int POK_BOOL_MASK = 0x00008000;
 	static const unsigned int POK_DATA_MASK = 0xFFFF0000;
-//	#ifdef TEST_VERBOSELY
+	#ifdef TEST_VERBOSELY
 	uint32_t 		i = 0;									// generic loop counter
-//	#endif // TEST_VERBOSELY
+	#endif // TEST_VERBOSELY
 
 	// copy the input buffer at input to a modifiable location at input512,
 	input512 = (uint8_t	*)malloc(len);		// allocate space for the copy
 	memcpy((uint8_t *)input512, (uint8_t *)input, len);
-//	#ifdef TEST_VERBOSELY
+	#ifdef TEST_VERBOSELY
 	printf("zr5_hash input:\n");
 	for (i=0; i<len; i++) { printf("%02x", input512[i]); }
 	printf("\n\n");
-//	#endif // TEST_VERBOSELY
+	#endif // TEST_VERBOSELY
 
 	// store the version bytes
 	memcpy((uint8_t *)&version, (uint8_t *)input, 4);
