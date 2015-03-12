@@ -183,7 +183,6 @@ var algos = module.exports = global.algos = {
         }
     },
     zr5: {
-        multiplier: Math.pow(2, 16),
         hash: function(){
             return function(){
                 return multiHashing.zr5.apply(this, arguments);
@@ -191,7 +190,6 @@ var algos = module.exports = global.algos = {
         }
     },
     ziftr: {
-        multiplier: Math.pow(2, 16),
         hash: function(){
             return function(){
                 return multiHashing.zr5.apply(this, arguments);
