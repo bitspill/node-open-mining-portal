@@ -3,14 +3,6 @@
     "symbol": "zrc",
     "algorithm": "zr5",
 
-    /* Magic value only required for setting up p2p block notifications. It is found in the daemon
-       source code as the pchMessageStart variable.
-       For example, litecoin mainnet magic: http://git.io/Bi8YFw
-       And for litecoin testnet magic: http://git.io/NXBYJA */
-    "peerMagic": "9eee832b", //optional
-    "peerMagicTestnet": "8b110906" //optional
-
-    //"txMessages": false, //options - defaults to false
-
-    //"mposDiffMultiplier": 256, //options - only for x11 coins in mpos mode
+    "peerMagic": "9eee832b",
+    "peerMagicTestnet": "8b110906"
 }

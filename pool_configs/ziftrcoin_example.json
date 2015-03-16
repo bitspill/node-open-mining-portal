@@ -2,16 +2,16 @@
     "enabled": true,
     "coin": "ziftrcoin.json",
 
-    "address": "LWi2bJrjFfWXH2S1d13R94sT6mcGSPatHs",
+    "address": "ZEk8mFrLNaVP2XYKdbDnQ5Zg5Tqofs2N26",
 
     "rewardRecipients": {
-        "LWi2bJrjFfWXH2S1d13R94sT6mcGSPatHs": 1.5
+        "ZEk8mFrLNaVP2XYKdbDnQ5Zg5Tqofs2N26": 0.5
     },
 
     "paymentProcessing": {
-        "enabled": false,
+        "enabled": true,
         "paymentInterval": 20,
-        "minimumPayment": 70,
+        "minimumPayment": 0.5,
         "daemon": {
             "host": "127.0.0.1",
             "port": 10332,
@@ -22,15 +22,15 @@
 
     "ports": {
         "3008": {
-            "diff": 8
+            "diff": 1
         },
         "3032": {
-            "diff": 32,
+            "diff": 0.001,
             "varDiff": {
-                "minDiff": 8,
+                "minDiff": 0.001,
                 "maxDiff": 512,
-                "targetTime": 15,
-                "retargetTime": 90,
+                "targetTime": 5,
+                "retargetTime": 20,
                 "variancePercent": 30
             }
         },
@@ -49,7 +49,7 @@
     ],
 
     "p2p": {
-        "enabled": true,
+        "enabled": false,
         "host": "127.0.0.1",
         "port": 10333,
         "disableTransactions": true
