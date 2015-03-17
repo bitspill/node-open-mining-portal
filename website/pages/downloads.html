@@ -1,0 +1,299 @@
+
+<style>
+    #holder{
+        display: flex;
+        flex-direction: row;
+    }
+
+    .glow{
+        box-shadow: inset 0 0 12px 4px #ff6c00;
+    }
+
+    .hidden{
+        display: none !important;
+    }
+
+    #menu{
+        background-color: #3d3d3d;
+        min-width: 170px;
+    }
+
+    #menu > .menuHeader{
+        color: #e3f7ff;
+        border-bottom: 1px solid #7f878b;
+        font-size: 1.2em;
+        padding: 16px 16px 4px 15px;
+    }
+
+    .menuList{
+        transition-duration: 200ms;
+    }
+
+    .menuList > a:first-child{
+        margin-top: 10px;
+    }
+
+    .menuList > a{
+        display: block;
+        color: #e3f7ff;
+        text-decoration: none;
+        padding: 7px;
+        padding-left: 25px;
+        text-transform: capitalize;
+    }
+
+    .menuList > a:hover{
+        color: #f69b3a;
+    }
+
+    #main{
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        margin: 18px;
+    }
+    .miningOption{
+        color: white;
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-height: 215px;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    a.miningOption:hover{
+        color: #f69b3a;
+    }
+
+    .miningOption:first-child{
+        background-color: #15444a;
+    }
+    .miningOption:last-child{
+        background-color: #15444a;
+    }
+    .miningOptionNum{
+        font-size: 6em;
+        padding-right: 20px;
+        width: 140px;
+        text-align: center;
+    }
+    .miningOptionInstructions{
+        flex: 1 1 auto;
+    }
+
+    .miningOptionInstructions > div:first-child{
+        font-size: 2.4em;
+    }
+    .miningOptionInstructions > div:last-child{
+        margin-top: 20px;
+        font-size: 1.3em;
+    }
+
+    #orHolder{
+        height: 37px;
+        text-align: center;
+    }
+    #orLine{
+        border-bottom: 1px solid #c2cacf;
+        height: 19px;
+        margin-bottom: -13px;
+    }
+    #orText{
+        background-color: #ebf4fa;
+        color: #5c5c5c;
+        display: inline-block;
+        width: 35px;
+        font-style: italic;
+    }
+
+    #coinInfoBackground{
+        transition-duration: 400ms;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: black;
+        opacity: 0.0;
+    }
+    #coinInfo{
+        display: flex;
+        flex-direction: column;
+        color: white;
+        width: 750px;
+        min-height: 400px;
+        top: 50px;
+        left: 50%;
+        margin-left: -375px;
+        position: absolute;
+        background-color: #f06350;
+    }
+    #coinInfo .coinInfoName{
+        text-transform: capitalize;
+    }
+    #coinInfo > div:first-of-type{
+        font-size: 1.8em;
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 35px;
+    }
+    #coinInfoRows{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex: 1 1 auto;
+        margin-bottom: 70px;
+    }
+    #coinInfoRows > div{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    #coinInfoRows > div > div{
+        padding: 3px;
+    }
+    #coinInfoRowKeys{
+        font-weight: bold;
+        padding-right: 30px;
+    }
+    #coinInfoRowKeys .coinInfoSubtle{
+        font-weight: normal;
+    }
+    #coinInfoRowValues{
+
+    }
+    #coinInfoClose{
+        position: absolute;
+        font-size: 3em;
+        top: 0;
+        right: 0;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        color: white;
+        text-decoration: none;
+    }
+    #coinInfoClose:hover{
+        color: #50f0e3;
+    }
+
+
+    #main {
+      padding: 20px;
+    }
+
+    #main table td p {
+      margin: 0.5em 1em 0.5em 0;
+    }
+
+    .download_container {
+        margin-bottom: 50px;
+    }
+
+    .download_column {
+        position: relative;
+        box-sizing: border-box;
+        float: left;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .download_column.stable { width: 37%; padding-left: 30px; padding-right: 0; border-right: 1px solid #ccc; }
+    .download_column.experimental { width: 60%; }
+    .download_column.experimental .builds { width: 60%; float: left; }
+    .download_column.experimental .repos { width: 40%; float: left; }
+
+    .download_column h4 { margin-bottom: 0; }
+    .download_column ul { margin-top: 0; }
+
+    .download_column.stable img { margin-bottom: 20px; }
+    p.warning { }
+    p.warning span {color: red; }
+
+    .clear { clear: both; }
+
+</style>
+
+<div id="holder">
+
+  <div id="main">
+
+
+<map name="windowsmap">
+    <area shape="rect" coords="294,0,370,38" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/ziftrcoin-0.9.3-win64-setup.exe" alt="64-Bit Windows">
+    <area shape="rect" coords="294,38,370,74" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/ziftrcoin-0.9.3-win32-setup.exe" alt="32-Bit Windows">
+    <area shape="rect" coords="0,75,135,97" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/sha256sums.asc" alt="Windows GPG">
+</map>
+<map name="macmap">
+    <area shape="rect" coords="0,0,370,75" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/ziftrcoin-0.9.3-osx.dmg" alt="OS X">
+    <area shape="rect" coords="0,75,135,97" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/sha256sums.asc" alt="OS X GPG">
+</map>
+<map name="linuxmap">
+    <area shape="rect" coords="294,0,370,38" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/ziftrcoin-0.9.3-linux64.tar.gz" alt="64-Bit Linux">
+    <area shape="rect" coords="294,38,370,74" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/ziftrcoin-0.9.3-linux32.tar.gz" alt="32-Bit Linux">
+    <area shape="rect" coords="0,75,135,97" href="https://d19y4lldx7po3t.cloudfront.net/downloads/0.9.3/sha256sums.asc" alt="Linux GPG">
+</map>
+
+    <div class="download_container">
+
+        <div class="download_column stable">
+          <h2>Stable Releases</h2>
+          <img usemap="#macmap" src="/static/wallet_osx.png">
+          <img usemap="#windowsmap" src="/static/wallet_windows.png">
+          <img usemap="#linuxmap" src="/static/wallet_linux.png">
+          <img src="/static/wallet_source.png">
+        </div>
+
+        <div class="download_column experimental">
+            <h2>Experimental Downloads</h2>
+            <p class="warning"><span>NOTE: </span>The builds below are compiled by and and are clean (virus-free), but they are considered experimental (pre-beta) and are completely untested. Some of them may also have direct access the hardware and could cause damage if used incorrectly.</p>
+
+            <div class="builds">
+                <h3>CPU Miner with Stratum Pools</h3>
+
+                <h4>WINDOWS</h4>
+                <ul>
+                    <li><a href="">Beta build 1.2</a></li>
+                    <li><a href="">Beta build 1.1</a></li>
+                </ul>
+
+                <h4>MAC OSX</h4>
+                <ul>
+                    <li><a href="">Beta build 1.2</a></li>
+                    <li><a href="">Beta build 1.1</a></li>
+                </ul>
+
+                <h3>CPU Miner without Stratum Pools</h3>
+                <h4>WINDOWS</h4>
+                <ul>
+                    <li><a href="">Beta build 1.2</a></li>
+                    <li><a href="">Beta build 1.1</a></li>
+                </ul>
+
+                <h4>MAC OSX</h4>
+                <ul>
+                    <li><a href="">Beta build 1.2</a></li>
+                    <li><a href="">Beta build 1.1</a></li>
+                </ul>
+
+            </div>
+
+            <div class="repos">
+                <h3>Github Repos</h3>
+                <ul>
+                    <li><a href="">Link</a></li>
+                    <li><a href="">Link</a></li>
+                    <li><a href="">Link</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="clear"></div>
+
+
+      </div>
+  </div>
+</div>
+
