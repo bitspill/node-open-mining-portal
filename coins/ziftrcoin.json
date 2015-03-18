@@ -1,0 +1,8 @@
+{
+    "name": "ZiftrCOIN",
+    "symbol": "zrc",
+    "algorithm": "zr5",
+
+    "peerMagic": "9eee832b",
+    "peerMagicTestnet": "8b110906"
+}
