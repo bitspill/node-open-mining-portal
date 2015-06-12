@@ -22,15 +22,21 @@
   },
 
   "ports": {
+    "3008": {
+      "diff": 1
+    },
     "3032": {
       "diff": 0.001,
       "varDiff": {
         "minDiff": 0.001,
         "maxDiff": 512,
-        "targetTime": 15,
-        "retargetTime": 90,
+        "targetTime": 5,
+        "retargetTime": 20,
         "variancePercent": 30
       }
+    },
+    "3256": {
+      "diff": 256
     }
   },
 
