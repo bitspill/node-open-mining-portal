@@ -1,6 +1,6 @@
 
 {
-  "enabled": true,
+  "enabled": false,
   "coin": "dropcoin.json",
 
   "address": "DbMvnFZqxpdU3giF3MYjjvxvZASnW3pQF9",
