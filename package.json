@@ -11,17 +11,19 @@
         "bitcoin",
         "litecoin",
         "scrypt",
-        "ziftrCOIN"
+        "ziftrCOIN",
+        "dropcoin"
     ],
-    "homepage": "https://github.com/ZiftrCOIN/node-open-mining-portal",
+    "homepage": "https://github.com/bitspill/node-open-mining-portal",
     "bugs": {
-        "url": "https://github.com/ZiftrCOIN/node-open-mining-portal/issues"
+        "url": "https://github.com/bitspill/node-open-mining-portal/issues"
     },
     "license": "GPL-2.0",
     "author": "Matthew Little",
     "contributors": [
         "vekexasia",
-        "TheSeven"
+        "TheSeven",
+        "bitspill"
     ],
     "main": "init.js",
     "bin": {
@@ -29,10 +31,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/ZiftrCOIN/node-open-mining-portal.git"
+        "url": "https://github.com/bitspill/node-open-mining-portal.git"
     },
     "dependencies": {
-        "stratum-pool": "git://github.com/ZiftrCOIN/node-stratum-pool.git",
+        "stratum-pool": "git://github.com/bitspill/node-stratum-pool.git",
         "dateformat": "*",
         "node-json-minify": "*",
         "redis": "*",
